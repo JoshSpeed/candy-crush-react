@@ -83,6 +83,40 @@ const App = () => {
     }
   }
 
+  // Checks for empty space below the current colour being checked - if true will move current square into space below
+  const moveIntoSquareBelow = () => {
+    for (let i = 0; i < 64 - width; i++) {
+      const firstRow = [0, 1, 2, 3, 4, 5, 6, 7];
+      const isFirstRow = firstRow.includes(i);
+
+      if (isFirstRow && currentColorArrangement[i] === '') {
+        let randomNumber = Math.floor(Math.random() * candyColors.length);
+        currentColorArrangement[i] = candyColors[randomNumber];
+      }
+
+      if ((currentColorArrangement[i + width]) === '') {
+        currentColorArrangement[i + width] = currentColorArrangement[i];
+        currentColorArrangement[i] = '';
+      }
+    }
+  }
+
+  const dragStart = (e) => {
+    console.log(e.target);
+    console.log('drag start');
+  }
+
+  const dragDrop = (e) => {
+    console.log(e.target);
+    console.log('drag drop');
+  }
+
+  const dragEnd = (e) => {
+    console.log(e.target);
+    console.log('drag end');
+  }
+
+
   const createBoard = () => {
 
     const randomColorArrangement = [];
@@ -109,12 +143,12 @@ const App = () => {
       checkForRowOfFour();
       checkForColumnOfThree();
       checkForRowOfThree();
+      moveIntoSquareBelow();
       setCurrentColorArrangment([...currentColorArrangement]);
     }, 100)
     return () => clearInterval(timer)
-  }, [checkForColumnOfFour, checkForRowOfFour, checkForColumnOfThree, checkForRowOfThree, currentColorArrangement]);
+  }, [checkForColumnOfFour, checkForRowOfFour, checkForColumnOfThree, checkForRowOfThree, moveIntoSquareBelow, currentColorArrangement]);
 
-  console.log(currentColorArrangement);
 
   return (
     <div className="app">
@@ -124,6 +158,14 @@ const App = () => {
             key={index}
             style={{ backgroundColor: candyColor }}
             alt={candyColor}
+            data-id={index}
+            draggable={true}
+            onDragStart={dragStart}
+            onDragOver={(e) => e.preventDefault()}
+            onDragEnter={(e) => e.preventDefault()}
+            onDragLeave={(e) => e.preventDefault()}
+            onDrop={dragDrop}
+            onDragEnd={dragEnd}
           />
         ))}
       </div>
